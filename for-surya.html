@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Surya, Na Matha Vinthava? 💛</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Nunito:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#120a1c;--bg2:#2a1233;--gold:#f2c879;--rose:#ff8fa8;--ink:#fff4ea;--soft:#d9c3d8;
+--serif:'Cormorant Garamond',Georgia,serif;--sans:'Nunito',system-ui,sans-serif;box-sizing:border-box;
+padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+*{box-sizing:border-box}
+body{margin:0;height:100%;overflow:hidden;color:var(--ink);font-family:var(--sans);background:var(--bg)}
+body:before{content:"";position:fixed;inset:0;z-index:0;background:linear-gradient(rgba(18,10,28,.7),rgba(18,10,28,.82)),var(--bgimg) center/cover no-repeat,radial-gradient(ellipse at 30% 20%,var(--bg2),var(--bg) 70%)}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+#floaters{position:fixed;inset:0;overflow:hidden;z-index:1;pointer-events:none}
+.fl{position:absolute;width:110px;height:140px;border-radius:10px;border:3px solid rgba(255,244,234,.85);
+background:linear-gradient(135deg,#4a2250,#8a3a62);box-shadow:0 8px 30px rgba(0,0,0,.5);display:grid;place-items:center;
+font-size:34px;opacity:.8;overflow:hidden;will-change:transform}
+.fl img{width:100%;height:100%;object-fit:cover}
+.screen{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:20px;
+padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+.hidden{display:none!important}
+h1,h2{font-family:var(--serif);font-weight:600;margin:0}
+/* lock */
+#lock{flex-direction:column;text-align:center;gap:14px}
+#lock h1{font-size:clamp(34px,8vw,58px);color:var(--gold)}
+#lock p{margin:0;color:var(--soft);max-width:30ch}
+.dots{display:flex;gap:14px;margin:10px 0}
+.dots i{width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);transition:.2s}
+.dots i.on{background:var(--gold);box-shadow:0 0 14px var(--gold)}
+.pad{display:grid;grid-template-columns:repeat(3,68px);gap:12px}
+.pad button{height:68px;border-radius:50%;border:1px solid rgba(242,200,121,.5);background:rgba(255,255,255,.06);
+color:var(--ink);font:600 24px var(--sans);cursor:pointer;backdrop-filter:blur(6px)}
+.pad button:active{background:rgba(242,200,121,.3)}
+.pad button:focus-visible,.nav button:focus-visible,#music:focus-visible,.cta:focus-visible,#rvclose:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.shake{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-10px)}40%,80%{transform:translateX(10px)}}
+#msg{min-height:1.4em;color:var(--rose);font-size:15px}
+/* story */
+#story{flex-direction:column;gap:16px}
+.card{width:min(980px,100%);max-height:calc(100% - 150px);overflow-y:auto;padding:28px 30px;border-radius:22px;
+background:rgba(26,12,38,.72);border:1px solid rgba(242,200,121,.28);backdrop-filter:blur(10px);
+box-shadow:0 20px 60px rgba(0,0,0,.5);animation:rise .7s ease}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+/* photo on the left, words on the right */
+.slide{display:grid;grid-template-columns:minmax(150px,38%) 1fr;gap:30px;align-items:center}
+.slide.nopic{grid-template-columns:1fr}
+.slide.nopic .pic{display:none}
+.pic{display:flex;justify-content:center;align-items:center;min-width:0}
+.ph{display:block;max-width:100%;max-height:min(62vh,540px);width:auto;height:auto;border:6px solid #fff4ea;border-bottom-width:22px;border-radius:6px;box-shadow:0 12px 30px rgba(0,0,0,.55);transform:rotate(-2.5deg)}
+.ph.r{transform:rotate(2.5deg)}
+.txt{min-width:0;max-height:calc(100vh - 290px);min-height:200px;overflow-y:auto;padding-right:8px;scrollbar-width:thin;scrollbar-color:rgba(242,200,121,.5) transparent}
+@supports (height:100dvh){.txt{max-height:calc(100dvh - 290px)}}
+.card h2{font-size:clamp(28px,5vw,40px);color:var(--gold);margin-bottom:14px;line-height:1.1}
+.card p{line-height:1.7;margin:0 0 12px;font-size:16.5px}
+.card em{color:var(--soft)}
+.card b{color:var(--rose);font-weight:600}
+.card blockquote{margin:16px 0;padding:6px 0 6px 16px;border-left:3px solid var(--gold);font-family:var(--serif);font-size:22px;line-height:1.4;font-style:italic}
+.card ul{padding-left:20px;line-height:1.65}.card li{margin-bottom:9px}
+.tl{display:grid;gap:8px;margin-top:14px}
+.tl div{padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.06);font-size:15px}
+.tl strong{color:var(--gold)}
+.big{font-family:var(--serif);font-size:clamp(30px,6vw,44px);text-align:center;line-height:1.2;color:var(--ink)}
+.nav{display:flex;align-items:center;gap:14px}
+.nav button{border:1px solid rgba(242,200,121,.55);background:rgba(242,200,121,.12);color:var(--gold);
+padding:11px 22px;border-radius:999px;font:600 15px var(--sans);cursor:pointer}
+.nav button:disabled{opacity:.3;cursor:default}
+.nav span{color:var(--soft);font-size:14px;min-width:46px;text-align:center}
+.cta{border:1px solid var(--gold);background:rgba(242,200,121,.12);color:var(--gold);padding:12px 26px;border-radius:999px;font:600 16px var(--sans);cursor:pointer}
+.cta.pulse{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.07);box-shadow:0 0 24px rgba(255,143,168,.65)}}
+#music{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:14px;z-index:60;width:44px;height:44px;border-radius:50%;
+border:1px solid rgba(242,200,121,.5);background:rgba(0,0,0,.35);color:var(--gold);font-size:18px;cursor:pointer}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:70;
+padding:12px 20px;border-radius:14px;background:var(--gold);color:#2a1233;font-weight:600;max-width:88%;text-align:center}
+.heart{cursor:pointer;display:inline-block}
+/* surprise pictures (crackers are drawn above them on the canvas) */
+#reveal{position:fixed;inset:0;z-index:45;display:flex;overflow-y:auto;
+padding:20px;padding-top:calc(20px + env(safe-area-inset-top,0px));padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));
+background:rgba(10,5,18,.84);backdrop-filter:blur(6px)}
+.rv{margin:auto;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:min(780px,100%)}
+#rvimg{display:block;max-width:100%;max-height:min(50vh,480px);width:auto;height:auto;border:6px solid #fff4ea;border-bottom-width:22px;border-radius:6px;
+box-shadow:0 16px 50px rgba(0,0,0,.6);animation:pop .6s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes pop{from{opacity:0;transform:scale(.85) rotate(-3deg)}to{opacity:1;transform:none}}
+#rvcap{margin:0;font-family:var(--serif);font-size:clamp(20px,4vw,26px);color:var(--gold);text-align:center;line-height:1.35}
+#rvcap span{display:block;margin:2px 0}
+#rvcap .last{margin-top:12px;color:var(--rose);font-size:1.12em}
+#hearts{position:fixed;inset:0;overflow:hidden;z-index:2;pointer-events:none}
+.gh{position:absolute;bottom:-90px;animation:rise2 linear forwards}
+@keyframes rise2{0%{transform:translate(0,0) rotate(-12deg);opacity:0}10%{opacity:.9}50%{transform:translate(var(--sw),-55vh) rotate(10deg)}100%{transform:translate(calc(var(--sw)*-1),-120vh) rotate(-8deg);opacity:0}}
+#mas{display:flex;align-items:center;gap:10px;max-width:min(640px,100%)}
+#mas svg,#mas img{width:84px;height:auto;flex:none;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+#bub{position:relative;padding:9px 14px;border-radius:16px;background:rgba(255,244,234,.95);color:#2a1233;font-weight:600;font-size:14px;line-height:1.3}
+#bub:before{content:"";position:absolute;left:-7px;top:50%;margin-top:-7px;border:7px solid transparent;border-left:0;border-right-color:rgba(255,244,234,.95)}
+/* phones: still side by side, just tighter */
+@media (max-width:600px){
+  .card{padding:16px 14px}
+  .slide{grid-template-columns:34% 1fr;gap:12px}
+  .ph{border-width:4px;border-bottom-width:14px}
+  .txt{max-height:calc(100vh - 270px);padding-right:4px}
+  @supports (height:100dvh){.txt{max-height:calc(100dvh - 270px)}}
+  .card h2{font-size:24px;margin-bottom:10px}
+  .card p,.card li{font-size:14px;line-height:1.55}
+  .card blockquote{font-size:18px;margin:12px 0}
+  .tl div{font-size:13px;padding:8px 10px}
+  .big{font-size:26px}
+  .cta{padding:10px 18px;font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){#hearts{display:none}.card{animation:none}.fl{display:none}.cta.pulse{animation:none}#rvimg{animation:none}}
+</style>
+</head>
+<body>
+<div id="floaters"></div>
+<div id="hearts"></div>
+<svg width="0" height="0" style="position:absolute"><defs>
+<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#ff8fa8" stop-opacity=".18"/></linearGradient>
+<linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#f2c879" stop-opacity=".18"/></linearGradient>
+<linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#c9a7ff" stop-opacity=".2"/></linearGradient>
+</defs></svg>
+<canvas id="fx"></canvas>
+<button id="music" class="hidden" aria-label="Toggle music">♪</button>
+
+<section id="lock" class="screen">
+  <h1>For Surya</h1>
+  <p>Only you have the code, nanna.</p>
+  <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
+  <div id="msg"></div>
+  <div class="pad" id="pad"></div>
+</section>
+
+<section id="story" class="screen hidden">
+  <div class="card" id="card"></div>
+  <div id="mas"></div>
+  <div class="nav"><button id="prev">Venakki</button><span id="count"></span><button id="next">Tarvatha chodu nanna</button></div>
+</section>
+
+<div id="reveal" class="hidden" role="dialog" aria-modal="true" aria-label="A surprise for Surya">
+  <div class="rv">
+    <img id="rvimg" alt="">
+    <div id="rvcap"></div>
+    <button class="cta" id="rvclose">Close</button>
+  </div>
+</div>
+<div id="toast" class="hidden"></div>
+
+<script>
+/* ---- Settings you can change later ---- */
+const CODE = "2814";
+const AUDIO_SRC = "Ammaadi.mp3";   // song file in the same folder as this html
+const SLIDE_IMGS = ["surya1","saurya2","surya3","surya4","surya5","surya6","surya7","surya8","surya9","surya10","surya11","surya12"].map(n=>"image/"+n+".jpeg"); // one photo per slide, in order
+/* pictures shown on the two buttons (both files sit in the same folder as this html) */
+const REVEALS = {
+  sunset:{img:"Sunset Friendship in Four Panels.png",alt:"Sunset friendship in four panels",
+    note:["This one is for you, hero 💛"]},
+  dreams:{img:"Dreams of Being Together.png",alt:"Dreams of being together",
+    note:["Take care, Bangarem 💛","Yevandhi, miss you badly 🥺","Hope we will meet soon 🤍","Thinnava nanna? If not, thinu vachi choodu malli 🍽️","Surya, when will you propose me?<br>I am waiting for your words 💍"]}
+};
+const BG_IMG = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSdv4rs_d2jk3N-n0Jal8y76q9nn9QjCr0ICzrHqGiMdg&s=10";
+const FLOAT_IMGS = [
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTF0lic06BvoHTfVNFVAjffRfOebLbfU6PNhz0ZPge2IA&s",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR67BN5_q53OLPELPLCAG1KzR_zapqrf1Xw0ES68gthuA&s=10",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0MA-j4KBnNy1minZAc6fFxcZDyWx8kkW5OjGOJkSATQ&s=10",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXCWszSTCVxcTsNwSfAJ3tk6m6gCialbaubyi-QhHC5Q&s=10",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOMaso3FEQLufwKtlB462M7ZXzHYaVWsOipoILV6yteQ&s=10",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDk_-2ZgXOp3o7MxCRywO-R-OZL8On4J9phdKMZXgWrA&s",
+"https://i.pinimg.com/originals/9d/92/6c/9d926cf33a8101e204322fde8dd81f41.jpg",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRundijq1yjHSW-BnFZQmxF0hTqrM3rKfDHKL5vM3Y2ig&s=10",
+"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTF5SK4elP6dcHtJ44CUHXJdj4sfUc-6XukivACo3Ok8Q&s=10"
+];
+const MASCOT_IMG = "";           // optional: your own cute couple picture, e.g. "image/mascot.png"
+const BUBBLES = ["Shall we move to next, nanna? 🐻","Ee page nachinda? Tarvatha chodu 💛","Inka chala undi… next chuddama? 🥺","Konchem ayithe vinu, tarvatha chodu 🤍","Shall we go to the next page? ✨","Haha, ready aa nanna? Next! 💫"];
+/* --------------------------------------- */
+
+const slides = [
+`<h2>For Surya.</h2>
+<p>Some people arrive quietly, and then everything feels different.</p>
+<p><em>July 29, 2026 · Snapchat · The day my story got a little softer</em></p>
+<blockquote>Hero, when will you propose me? 😌</blockquote>
+<p>Keep going, nanna. There's something I want to tell you.</p>`,
+
+`<h2>How It Began</h2>
+<p>It started with a simple “hi.”</p>
+<p><b>July 29, 2026.</b> Snapchat. Two strangers and one small conversation.</p>
+<p><b>July 31.</b> I found you on Instagram. I said <em>“hi,”</em> then <em>“request accept cheasava?”</em> You asked <em>“Y r U asking alike?”</em> and I said <em>“Ala ani kadu, serious ga.”</em></p>
+<p>I asked, <em>“Job aa, studying aa?”</em> You said, <em>“Both.”</em> Then, <em>“Working as technical officer.”</em></p>
+<p>That was the first time I thought, this boy is different.</p>
+<div class="tl">
+<div><strong>Jul 29</strong> · We met on Snapchat</div>
+<div><strong>Jul 31</strong> · The first real conversation on Instagram</div>
+<div><strong>Aug 4</strong> · “I wanna hug U babe.” The first time you said it</div>
+<div><strong>Aug 5</strong> · I asked, “Will you be mine?” You said, “Thappakundaa.”</div>
+<div><strong>Aug 6</strong> · The day I trusted you with my truth</div></div>`,
+
+`<h2>The Day I Trusted You</h2>
+<p>Everyone carries something heavy. I carried mine for years.</p>
+<p>A personal problem from my childhood that I never shared with anyone outside my family, because I was afraid the world would judge me before it understood me. Someone I once trusted had already walked away. I had learned to expect it.</p>
+<p><b>August 6.</b> I wrote it all to you, message after message. And I told you the hardest part: <em>“Nenu cheating cheyyalenu. Ninnu mosam cheyyalenu.”</em></p>
+<p>Then I did the most foolish thing. I said, <em>“Don't worry, I'll be a good friend. Silent ga aipothanu.”</em> I was already preparing myself to lose you.</p>
+<p>I only wanted three sentences from you, nanna. Only you could say them:</p>
+<blockquote>Neku nenu unnanu. Nenu chusukuntanu. Neku em kadu.</blockquote>
+<p>And you said, <b>“Nuvvu em baadha padaku nanna, neeku nenunna kadaa.”</b></p>
+<p>Right after: <em>“Ur blessed to have such good parents.”</em> Then: <em>“Intha baadha pettukunnava nannaa...”</em> 🥹 And when I tried to step back: <b>“Y r u thinking like this?”</b></p>
+<p>You didn't pity me. You didn't pull away. You stayed. That night I understood that you are not like everyone else.</p>`,
+
+`<h2>Why You Are Different</h2>
+<p>Many people show concern. You showed <b>affection</b>.</p>
+<p>Concern says, <em>“I'm sorry for you.”</em> Affection says, <em>“I'm staying right here.”</em></p>
+<p>You didn't treat me like a problem to be solved. You treated me like a person worth caring for. You called me <b>kothi, bangarem, bujji konda, bangaru konda</b>, and each time, I believed it a little more.</p>
+<p><b>Aug 6:</b> <em>“You are always genuine, bangaru kondaa. U r very honest.”</em> Then: <em>“Nee honesty ki fidaa.”</em></p>
+<p>The thing I was most afraid to say became the thing you admired most. My past does not decide my worth, and you made that clear.</p>
+<blockquote>Enduku ala over think chestav bangaram.</blockquote>
+<p><em>“Love u forever and ever.”</em></p>`,
+
+`<h2>Little Things I Love</h2>
+<ul>
+<li><b>Your good mornings.</b> “Good morning ma,” “Good morning nanna.” Before the sun is even up, you remember me.</li>
+<li><b>Your allari.</b> “Wait nannaa… washroom ki vellaka chesta,” and “Puppy ante kukka pilla.” You make ordinary days funny.</li>
+<li><b>How you calm me.</b> The day I panicked before my project review, you said, “Don't worry, do your best. Don't be panic.”</li>
+<li><b>How you forgive me.</b> When I said sorry for overthinking, you said, “It's ok,” and then “Gud mng.” No drama. Just peace.</li>
+<li><b>How you hold on to me.</b> “Enduku naku kuda intha attachment build aipoyindi.” You felt it too, and you didn't hide it.</li>
+<li><b>How you make me comfortable.</b> With you I can say silly things, serious things, and sleepy things, and still feel safe.</li></ul>`,
+
+`<h2>Surya, Na Matha Vinthava? 🤍</h2>
+<p>Surya nanna, ee matha konchem vinu.</p>
+<p>You already have a job, and now you're building your own dream: <b>Aqualabs by Surya.</b> Job, business, deadlines, one more plan on top of the last. I see how much you carry, and I'm so proud of you.</p>
+<p>I'm still searching for my own job, so I know how hard it is to build something from nothing. That's why I respect you so much.</p>
+<p>But these days you're busy, busy, busy. Food late, sleep late, and fewer minutes for me. I'm not complaining, nanna. On <b>Sep 14</b> we had a 13-second video call, and I held on to those 13 seconds like they were gold.</p>
+<p><b>I'm not beside you right now to take care of you. So you need to take care of yourself too, nanna.</b></p>
+<p>You take care of your family like a responsible son. You take care of your work like a responsible professional. You take care of everyone. <b>Mari ninnu evaru chusukuntaru?</b></p>
+<p>I can't put food on your plate yet. So eat on time for me. Sleep on time for me. On <b>Aug 9</b>, I wrote you a dishti prayer: <em>“Anni disthulu povali, aarogyam maatrame undaali.”</em></p>
+<blockquote>Neku nenu unnanu. Nenu chusukuntanu. Neku em kadu.<br><small>The three lines I only want to hear from you, Surya.</small></blockquote>`,
+
+`<h2>Distance Is Just Temporary</h2>
+<p>We haven't met yet, nanna. Some days the distance feels very long.</p>
+<p><b>Sep 14.</b> I typed, <em>“Surya, I want to see you.”</em> Four words, and everything I felt was in them.</p>
+<p>I think about the day we finally meet. <b>I want to run towards you and hug you tight.</b></p>
+<p>On my low days, when everything feels too heavy, I want to cry in your arms without saying a word. Just your hand on my back.</p>
+<p><b>I want to feed you, nanna.</b> Make you sit, close the laptop, and feed you with my own hands, because you always forget to eat.</p>
+<p>And on my happy days, you are the first person I want to tell. <b>I want to share every happy moment with you too.</b></p>
+<p>We are both working on our own paths, you with your job and Aqualabs, me searching for mine. We need to stand strong first. <b>And then we'll meet. Soon.</b> Until then, trust me, nanna.</p>`,
+
+`<h2>My Wishes For Us</h2>
+<p><b>Natho undu, nanna.</b><br>Not only when life is easy. On the busy days, the quiet days, and the uncertain days too.</p>
+<p><b>Nuvvu naku kavali, nanna.</b><br>Not for a few days or a few months. I want you in my life, always.</p>
+<p><b>Trust me.</b><br>I won't hurt you, and I won't let go.</p>
+<p><b>A promise on my heart side.</b><br>There is a ring I keep close to my heart, and it waits for you. Till the day I give it to you, it stays right there.</p>`,
+
+/* slide 9: button opens the Sunset picture + crackers */
+`<h2>You Fill My Heart 💛</h2>
+<p>There is one more thing, hero.</p>
+<p><em>Nuvvu naku kavali, nanna. Ee heart ni nuvve nimputhava.</em></p>
+<p style="text-align:center;margin-top:22px"><button class="cta pulse" id="heroBtn">💛 Click here, hero</button></p>`,
+
+`<h2>What I Promise</h2>
+<p>Surya, I'm not perfect and I don't have every answer. But I know this: if I get a thousand chances, if life separates us, if we fight, if the whole world stands between us,</p>
+<blockquote>Nenu malli Choose Cheasukuntha.</blockquote>
+<p><em>Vidi poina, godava padina, nenu same person ni choose chesukuntanu.</em> That is what true love means to me, nanna. Not choosing someone when it's easy, but choosing the same person again and again, even when it's hard.</p>
+<p>Because you're unique. Because you're a good person. And because with you, I feel something no one else has ever made me feel.</p>`,
+
+`<h2>Thank You, Surya 🥹</h2>
+<p>For listening when I was afraid.<br>For staying when I thought I'd be left alone.<br>For “Nuvvu em baadha padaku nanna.”<br>For calling me <b>kothi, bangarem, bujji konda, bangaru konda.</b></p>
+<p>And one honest thing, nanna:</p>
+<blockquote>I'm afraid of losing you.</blockquote>
+<p>It's not overthinking. It's fear, because you've become that important to me. So please stay, nanna. Please.</p>`,
+
+/* last slide: ONE button. "Hold my hand" opens the Dreams picture + note + crackers; after that it becomes "Tap me, hero" */
+`<p class="big">You are my favorite person.<br>And this is just the beginning. 💛</p>
+<p style="text-align:center"><em>Aug 5. I asked, “Will you be mine?” You said, “Thappakundaa.”</em></p>
+<blockquote style="text-align:center;border:none">Hero… “definitely” is not a proposal.<br>Touch Below 😌💍</blockquote>
+<p style="text-align:center"><button class="cta pulse" id="heroBtn2">🤝 Will You Be Mine?</button></p>
+<p style="text-align:center;font-size:14px"><em>Made with all my heart, Ela kalisamo Telyadu Strangers To for ever Be Mine Laga Kalisi Poyavu Idi Ne Kosam Surya <span class="heart" id="heart">❤️</span></em></p>`
+];
+
+const $ = id => document.getElementById(id);
+let typed = "", idx = 0, opener = null, held = false;
+
+/* keypad */
+const pad = $("pad");
+["1","2","3","4","5","6","7","8","9","","0","⌫"].forEach(k=>{
+  const b=document.createElement("button");
+  if(!k){b.style.visibility="hidden";b.tabIndex=-1}
+  b.textContent=k;b.onclick=()=>press(k);pad.appendChild(b);
+});
+function paint(){[...$("dots").children].forEach((d,i)=>d.classList.toggle("on",i<typed.length))}
+function press(k){
+  if(!k)return;
+  if(k==="⌫"){typed=typed.slice(0,-1)}
+  else if(typed.length<4){typed+=k}
+  paint();$("msg").textContent="";
+  if(typed.length===4){
+    if(typed===CODE){unlock()}
+    else{$("msg").textContent="Not that one, nanna. Try again 🥺";
+      const l=$("lock");l.classList.add("shake");setTimeout(()=>{l.classList.remove("shake");typed="";paint()},450)}
+  }
+}
+document.addEventListener("keydown",e=>{
+  if(!$("reveal").classList.contains("hidden")){ if(e.key==="Escape")closeReveal(); return }
+  if(!$("lock").classList.contains("hidden")){ if(/^\d$/.test(e.key))press(e.key); if(e.key==="Backspace")press("⌫") }
+  else{ if(e.key==="ArrowRight")go(1); if(e.key==="ArrowLeft")go(-1) }
+});
+
+function unlock(){
+  burst(innerWidth/2,innerHeight/2,90);
+  $("lock").classList.add("hidden");$("story").classList.remove("hidden");
+  $("music").classList.remove("hidden");show();playMusic();
+}
+
+document.documentElement.style.setProperty('--bgimg','url("'+BG_IMG+'")');
+/* mascot (original little bear couple, or your own picture) */
+$("mas").innerHTML=(MASCOT_IMG?'<img src="'+MASCOT_IMG+'" alt="">':
+'<svg viewBox="0 0 130 80" aria-hidden="true"><g><circle cx="22" cy="20" r="9" fill="#a8744f"/><circle cx="58" cy="20" r="9" fill="#a8744f"/><circle cx="40" cy="42" r="26" fill="#c58b61"/><circle cx="40" cy="50" r="11" fill="#f1d3b3"/><circle cx="31" cy="38" r="2.6" fill="#2b1b2e"/><circle cx="49" cy="38" r="2.6" fill="#2b1b2e"/><ellipse cx="40" cy="47" rx="3.6" ry="2.6" fill="#2b1b2e"/><path d="M34 53Q40 59 46 53" stroke="#2b1b2e" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="24" cy="46" r="4" fill="#ff8fa8" opacity=".7"/><circle cx="56" cy="46" r="4" fill="#ff8fa8" opacity=".7"/></g><g><circle cx="76" cy="22" r="9" fill="#e9d4b5"/><circle cx="112" cy="22" r="9" fill="#e9d4b5"/><circle cx="94" cy="44" r="26" fill="#f5e6cc"/><circle cx="94" cy="52" r="11" fill="#fff6e8"/><circle cx="85" cy="40" r="2.6" fill="#2b1b2e"/><circle cx="103" cy="40" r="2.6" fill="#2b1b2e"/><ellipse cx="94" cy="49" rx="3.6" ry="2.6" fill="#2b1b2e"/><path d="M88 55Q94 61 100 55" stroke="#2b1b2e" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="78" cy="48" r="4" fill="#ff8fa8" opacity=".7"/><circle cx="110" cy="48" r="4" fill="#ff8fa8" opacity=".7"/></g><path d="M65 10C58 3 60-3 65 0C70-3 72 3 65 10Z" fill="#ff5d7a"/></svg>')+'<div id="bub"></div>';
+
+/* slides: photo on the left (shown in full, not cropped), words on the right */
+function withPhoto(i,html){
+  const img='<img class="ph'+(i%2?' r':'')+'" src="'+SLIDE_IMGS[i%SLIDE_IMGS.length]+'" alt="" onerror="var s=this.closest(\'.slide\');if(s)s.classList.add(\'nopic\');this.remove()">';
+  return '<div class="slide"><div class="pic">'+img+'</div><div class="txt">'+html+'</div></div>';
+}
+function show(){
+  $("card").innerHTML=withPhoto(idx,slides[idx]);
+  $("bub").textContent=idx===slides.length-1?"That's all, hero. Now your turn 😌💍":BUBBLES[idx%BUBBLES.length];$("card").style.animation="none";void $("card").offsetWidth;$("card").style.animation="";
+  $("card").scrollTop=0;
+  $("count").textContent=(idx+1)+" / "+slides.length;
+  $("prev").disabled=idx===0;$("next").disabled=idx===slides.length-1;
+  const hb=$("heroBtn");if(hb)hb.onclick=()=>openReveal("sunset",hb);
+  /* last slide: one button, two steps */
+  const hb2=$("heroBtn2");
+  if(hb2){
+    const sync=()=>{hb2.textContent=held?"Tap me, hero ✨":"🤝 Will You Be Mine?";hb2.classList.toggle("pulse",!held)};
+    sync();
+    hb2.onclick=()=>{
+      if(!held){held=true;sync();openReveal("dreams",hb2)}
+      else{
+        for(let i=0;i<5;i++)setTimeout(()=>burst(innerWidth*Math.random(),innerHeight*(.2+.5*Math.random()),70),i*180);
+        toast("Did you eat today, nanna? 🥺 If not, go eat first. Then come back.");
+      }
+    };
+  }
+  const h=$("heart");if(h)h.onclick=()=>toast("Nuvvu naku chala special, nanna. 💛");
+  if(idx>0)burst(innerWidth/2,innerHeight/2,26);
+}
+function go(d){const n=idx+d;if(n<0||n>=slides.length)return;idx=n;show()}
+$("prev").onclick=()=>go(-1);$("next").onclick=()=>go(1);
+function toast(t){const e=$("toast");e.textContent=t;e.classList.remove("hidden");clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.add("hidden"),4200)}
+
+/* surprise pictures: image + note under it + crackers */
+function openReveal(key,btn){
+  const r=REVEALS[key],im=$("rvimg");
+  opener=btn||null;
+  im.style.display="";im.alt=r.alt;
+  im.onerror=()=>{im.style.display="none";toast("Put “"+r.img+"” next to for-surya.html 🥺")};
+  im.src=encodeURI(r.img);
+  $("rvcap").innerHTML=r.note.map((l,i)=>'<span'+(r.note.length>1&&i===r.note.length-1?' class="last"':'')+'>'+l+'</span>').join("");
+  $("reveal").classList.remove("hidden");
+  $("reveal").scrollTop=0;
+  $("rvclose").focus();
+  crackers();
+}
+function closeReveal(){$("reveal").classList.add("hidden");if(opener)opener.focus()}
+$("rvclose").onclick=closeReveal;
+$("reveal").addEventListener("click",e=>{if(e.target===$("reveal"))closeReveal()});
+
+/* music */
+let audio=null,playing=false;
+function playMusic(){
+  if(!AUDIO_SRC)return;
+  if(!audio){audio=new Audio(encodeURI(AUDIO_SRC));audio.loop=true;audio.volume=.6}
+  audio.play().then(()=>{playing=true;$("music").style.opacity=1}).catch(()=>{});
+}
+$("music").onclick=()=>{
+  if(!AUDIO_SRC){toast("Your song will play here once it's added 🎵");return}
+  if(playing){audio.pause();playing=false;$("music").style.opacity=.5}else playMusic();
+};
+
+/* floating pictures (frames until real photos are added) */
+const fl=$("floaters");
+const items=FLOAT_IMGS.length?FLOAT_IMGS:["💛","🌙","✨","🤍","🌸","💫"];
+items.forEach((src,i)=>{
+  const d=document.createElement("div");d.className="fl";
+  if(FLOAT_IMGS.length){const im=new Image();im.src=src;im.onerror=()=>d.remove();d.appendChild(im)}else d.textContent=src;
+  const w=90+Math.random()*60;d.style.width=w+"px";d.style.height=w*1.25+"px";
+  fl.appendChild(d);
+  const rnd=()=>({x:Math.random()*(innerWidth-w),y:Math.random()*(innerHeight-w*1.25),r:(Math.random()-.5)*30});
+  const run=()=>{const a=rnd(),b=rnd();
+    d.animate([{transform:`translate(${a.x}px,${a.y}px) rotate(${a.r}deg)`},{transform:`translate(${b.x}px,${b.y}px) rotate(${b.r}deg)`}],
+    {duration:9000+Math.random()*7000,easing:"ease-in-out",fill:"forwards",delay:i*400}).onfinish=run};
+  run();
+});
+
+/* flying glass hearts */
+const HP="M50 90C8 60 4 28 26 14C38 7 48 14 50 24C52 14 62 7 74 14C96 28 92 60 50 90Z";
+function glassHeart(){
+  const d=document.createElement("div");d.className="gh";
+  const s=24+Math.random()*46,g=1+(Math.random()*3|0),t=9+Math.random()*9;
+  d.style.cssText="left:"+Math.random()*95+"%;width:"+s+"px;height:"+s+"px;animation-duration:"+t+"s;--sw:"+(Math.random()*80-40)+"px";
+  d.innerHTML='<svg viewBox="0 0 100 100" width="100%" height="100%"><path d="'+HP+'" fill="url(#g'+g+')" stroke="rgba(255,255,255,.7)" stroke-width="2.5"/><path d="M22 30Q20 44 30 54" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" opacity=".75"/><circle cx="70" cy="28" r="3.5" fill="#fff" opacity=".7"/></svg>';
+  $("hearts").appendChild(d);d.onanimationend=()=>d.remove();
+}
+setInterval(glassHeart,650);for(let i=0;i<6;i++)setTimeout(glassHeart,i*250);
+
+/* sparkles + blasts + crackers */
+const cv=$("fx"),cx=cv.getContext("2d");let P=[];
+function fit(){cv.width=innerWidth*devicePixelRatio;cv.height=innerHeight*devicePixelRatio;cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0)}
+fit();addEventListener("resize",fit);
+const cols=["#f2c879","#ff8fa8","#fff4ea","#c9a7ff","#7fe7ff","#ff6b6b"];
+function spark(x,y,n,spd,life){for(let i=0;i<n;i++){const a=Math.random()*6.283,s=Math.random()*spd;
+  P.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:life*(.6+Math.random()*.6),m:life,c:cols[Math.random()*cols.length|0],r:1+Math.random()*2.6})}}
+function burst(x,y,n){spark(x,y,n,7,60)}
+/* one cracker shell: a two-colour ring that opens up, plus loose sparks */
+function firework(x,y){
+  const c1=cols[Math.random()*cols.length|0],c2=cols[Math.random()*cols.length|0],n=64;
+  for(let i=0;i<n;i++){const a=i/n*6.283,s=3+Math.random()*3.5;
+    P.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:85,m:85,c:i%2?c1:c2,r:1.6+Math.random()*1.6})}
+  spark(x,y,34,6,70);
+}
+/* a rocket climbs with a spark trail, then explodes */
+function rocket(x,ty){
+  let y=innerHeight;
+  const t=setInterval(()=>{y-=14;spark(x,y,2,.6,18);if(y<=ty){clearInterval(t);firework(x,y)}},16);
+}
+function crackers(){
+  for(let i=0;i<9;i++)setTimeout(()=>rocket(innerWidth*(.12+.76*Math.random()),innerHeight*(.12+.35*Math.random())),i*420);
+}
+addEventListener("pointermove",e=>spark(e.clientX,e.clientY,2,1.2,32));
+addEventListener("pointerdown",e=>burst(e.clientX,e.clientY,34));
+(function loop(){
+  cx.clearRect(0,0,innerWidth,innerHeight);
+  P=P.filter(p=>p.l>0);
+  for(const p of P){p.x+=p.vx;p.y+=p.vy;p.vy+=.06;p.vx*=.985;p.l--;
+    cx.globalAlpha=Math.max(p.l/p.m,0);cx.fillStyle=p.c;cx.shadowColor=p.c;cx.shadowBlur=10;
+    cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fill()}
+  cx.globalAlpha=1;requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
